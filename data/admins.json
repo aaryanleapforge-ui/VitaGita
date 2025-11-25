@@ -2,10 +2,10 @@
   {
     "id": "mid3rb89bzwxsrz88tf",
     "email": "admin@gitagita.com",
-    "password": "$2a$10$qMxawqY5BayTCVo5cthJauwQQn0YP8YfV/1BJEtGDdgGPMwfxyBCu",
+    "password": "$2a$10$VCuHFPA.VDoKFVbBz.oGvegMaZnwNZhDjsnk7pd5OB1T4EwSPQHVK",
     "name": "Admin",
     "role": "super_admin",
     "createdAt": "2025-11-24T12:07:45.561Z",
-    "lastLogin": "2025-11-24T18:40:47.506Z"
+    "lastLogin": null
   }
 ]
