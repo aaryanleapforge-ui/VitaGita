@@ -143,6 +143,58 @@ router.post('/login', async (req, res) => {
 });
 
 /**
+ * POST /api/users/forgot-password (Public - for mobile app)
+ * Reset user password without authentication
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    
+    console.log('🔐 Password reset request for:', email);
+    
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and new password are required'
+      });
+    }
+    
+    const users = await db.users.getAll();
+    const userIndex = users.findIndex(u => u.email === email);
+    
+    if (userIndex === -1) {
+      console.log('❌ User not found:', email);
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    users[userIndex].password = hashedPassword;
+    users[userIndex].updatedAt = new Date().toISOString();
+    
+    await db.users.save(users);
+    
+    console.log('✅ Password reset successful for:', email);
+    
+    res.json({
+      success: true,
+      message: 'Password updated successfully'
+    });
+  } catch (error) {
+    console.error('Password reset error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to reset password'
+    });
+  }
+});
+
+/**
  * GET /api/bookmarks/:email (Public - for mobile app)
  * Get user's bookmarks
  */
