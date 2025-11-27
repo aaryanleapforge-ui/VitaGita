@@ -1,35 +1,4 @@
 {
-<<<<<<< HEAD
-  "name": "gita-admin-panel",
-  "version": "1.0.0",
-  "description": "Web-based Admin Panel for Gita App",
-  "main": "server/index.js",
-  "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js",
-    "client": "cd client && npm start",
-    "build": "cd client && npm run build",
-    "install-all": "npm install && cd client && npm install",
-    "setup": "npm install && cd client && npm install && cd .. && echo Setup complete! Now run: npm run dev-all",
-    "dev-all": "concurrently \"npm run dev\" \"npm run client\" --names \"SERVER,CLIENT\" --prefix-colors \"bgBlue.bold,bgMagenta.bold\""
-  },
-  "keywords": ["admin", "dashboard", "gita"],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "body-parser": "^1.20.2",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "dotenv": "^16.3.1",
-    "mongodb": "^6.3.0",
-    "mongoose": "^8.0.3"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2",
-    "concurrently": "^8.2.2"
-=======
   "name": "gita-backend",
   "version": "1.0.0",
   "description": "Gita App Backend API",
@@ -47,6 +16,5 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
     "dotenv": "^16.3.1"
->>>>>>> 3dc147f000191c049b88c9aeb319c7417d645ade
   }
 }
