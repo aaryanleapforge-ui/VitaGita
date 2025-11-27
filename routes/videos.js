@@ -13,6 +13,20 @@ const router = express.Router();
 // All routes require authentication
 router.use(authenticateAdmin);
 
+// Helper function to fix URL if it's stored as an object with numeric keys
+const fixUrl = (url) => {
+  if (typeof url === 'string') return url;
+  if (typeof url === 'object' && url !== null) {
+    // Convert object with numeric keys back to string
+    const chars = [];
+    for (let i = 0; url[i] !== undefined; i++) {
+      chars.push(url[i]);
+    }
+    return chars.join('');
+  }
+  return url;
+};
+
 /**
  * GET /api/videos
  * Get all video links
@@ -25,8 +39,8 @@ router.get('/', async (req, res) => {
     // Filter out Firestore metadata and ensure proper structure
     const videoArray = videos.map(video => ({
       key: video.key || video.id,
-      url: video.url
-    })).filter(v => v.key && v.url);
+      url: fixUrl(video.url)
+    })).filter(v => v.key && v.url && typeof v.url === 'string');
 
     res.json({
       success: true,
@@ -64,7 +78,7 @@ router.get('/:key', async (req, res) => {
       success: true,
       data: {
         key: video.key || video.id,
-        url: video.url
+        url: fixUrl(video.url)
       }
     });
   } catch (error) {
