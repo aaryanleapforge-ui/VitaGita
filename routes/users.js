@@ -204,9 +204,9 @@ router.get('/bookmarks/:email', async (req, res) => {
     const user = users.find(u => u.email === req.params.email);
     
     if (!user) {
-      return res.json({
-        success: true,
-        bookmarks: []
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
       });
     }
     
@@ -216,9 +216,9 @@ router.get('/bookmarks/:email', async (req, res) => {
     });
   } catch (error) {
     console.error('Get bookmarks error:', error);
-    res.json({
-      success: true,
-      bookmarks: []
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get bookmarks'
     });
   }
 });
