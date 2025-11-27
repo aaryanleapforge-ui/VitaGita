@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Video Links Management Routes
- * 
+ *
  * Manage video links for shloks
  */
 
@@ -20,13 +20,14 @@ router.use(authenticateAdmin);
 router.get('/', async (req, res) => {
   try {
     const videos = await db.videos.getAll();
-    
-    // Convert object to array for easier frontend handling
-    const videoArray = Object.entries(videos).map(([key, url]) => ({
-      key,
-      url
-    }));
-    
+
+    // Firestore returns array of objects with id, key, url
+    // Filter out Firestore metadata and ensure proper structure
+    const videoArray = videos.map(video => ({
+      key: video.key || video.id,
+      url: video.url
+    })).filter(v => v.key && v.url);
+
     res.json({
       success: true,
       data: {
@@ -50,20 +51,20 @@ router.get('/', async (req, res) => {
 router.get('/:key', async (req, res) => {
   try {
     const videos = await db.videos.getAll();
-    const url = videos[req.params.key];
-    
-    if (!url) {
+    const video = videos.find(v => (v.key || v.id) === req.params.key);
+
+    if (!video) {
       return res.status(404).json({
         success: false,
         error: 'Video not found'
       });
     }
-    
+
     res.json({
       success: true,
       data: {
-        key: req.params.key,
-        url
+        key: video.key || video.id,
+        url: video.url
       }
     });
   } catch (error) {
@@ -82,26 +83,28 @@ router.get('/:key', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { key, url } = req.body;
-    
+
     if (!key || !url) {
       return res.status(400).json({
         success: false,
         error: 'Key and URL are required'
       });
     }
-    
+
     const videos = await db.videos.getAll();
-    
-    if (videos[key]) {
+
+    // Check if key exists
+    if (videos.find(v => (v.key || v.id) === key)) {
       return res.status(409).json({
         success: false,
         error: 'Video key already exists'
       });
     }
-    
-    videos[key] = url;
+
+    // Add new video
+    videos.push({ key, url });
     await db.videos.save(videos);
-    
+
     res.status(201).json({
       success: true,
       data: { key, url },
@@ -123,26 +126,27 @@ router.post('/', async (req, res) => {
 router.put('/:key', async (req, res) => {
   try {
     const { url } = req.body;
-    
+
     if (!url) {
       return res.status(400).json({
         success: false,
         error: 'URL is required'
       });
     }
-    
+
     const videos = await db.videos.getAll();
-    
-    if (!videos[req.params.key]) {
+    const videoIndex = videos.findIndex(v => (v.key || v.id) === req.params.key);
+
+    if (videoIndex === -1) {
       return res.status(404).json({
         success: false,
         error: 'Video not found'
       });
     }
-    
-    videos[req.params.key] = url;
+
+    videos[videoIndex].url = url;
     await db.videos.save(videos);
-    
+
     res.json({
       success: true,
       data: { key: req.params.key, url },
@@ -164,17 +168,18 @@ router.put('/:key', async (req, res) => {
 router.delete('/:key', async (req, res) => {
   try {
     const videos = await db.videos.getAll();
-    
-    if (!videos[req.params.key]) {
+    const videoIndex = videos.findIndex(v => (v.key || v.id) === req.params.key);
+
+    if (videoIndex === -1) {
       return res.status(404).json({
         success: false,
         error: 'Video not found'
       });
     }
-    
-    delete videos[req.params.key];
+
+    videos.splice(videoIndex, 1);
     await db.videos.save(videos);
-    
+
     res.json({
       success: true,
       message: 'Video link deleted successfully'
@@ -195,31 +200,34 @@ router.delete('/:key', async (req, res) => {
 router.post('/bulk', async (req, res) => {
   try {
     const { videos: newVideos } = req.body;
-    
+
     if (!newVideos || typeof newVideos !== 'object') {
       return res.status(400).json({
         success: false,
         error: 'Videos object is required'
       });
     }
-    
+
     const videos = await db.videos.getAll();
-    
+
     // Merge new videos
     let added = 0;
     let updated = 0;
-    
+
     for (const [key, url] of Object.entries(newVideos)) {
-      if (videos[key]) {
+      const existingIndex = videos.findIndex(v => (v.key || v.id) === key);
+      
+      if (existingIndex >= 0) {
+        videos[existingIndex].url = url;
         updated++;
       } else {
+        videos.push({ key, url });
         added++;
       }
-      videos[key] = url;
     }
-    
+
     await db.videos.save(videos);
-    
+
     res.json({
       success: true,
       message: `Bulk import completed: ${added} added, ${updated} updated`,
