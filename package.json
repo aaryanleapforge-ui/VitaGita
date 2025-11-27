@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "gita-admin-panel",
   "version": "1.0.0",
   "description": "Web-based Admin Panel for Gita App",
@@ -28,5 +29,24 @@
   "devDependencies": {
     "nodemon": "^3.0.2",
     "concurrently": "^8.2.2"
+=======
+  "name": "gita-backend",
+  "version": "1.0.0",
+  "description": "Gita App Backend API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": ["gita", "api", "backend"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1"
+>>>>>>> 3dc147f000191c049b88c9aeb319c7417d645ade
   }
 }
