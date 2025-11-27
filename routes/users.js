@@ -257,6 +257,48 @@ router.post('/bookmarks/:email', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/users/:email (Public - for mobile app)
+ * Delete user account
+ */
+router.delete('/:email', async (req, res) => {
+  try {
+    console.log('🗑️ Delete account request for:', req.params.email);
+    
+    const users = await db.users.getAll();
+    const userIndex = users.findIndex(u => u.email === req.params.email);
+    
+    if (userIndex === -1) {
+      console.log('❌ User not found:', req.params.email);
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+    
+    users.splice(userIndex, 1);
+    await db.users.save(users);
+    
+    // Update analytics
+    const analytics = await db.analytics.get();
+    analytics.totalUsers = users.length;
+    await db.analytics.save(analytics);
+    
+    console.log('✅ User deleted successfully:', req.params.email);
+    
+    res.json({
+      success: true,
+      message: 'User deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete user'
+    });
+  }
+});
+
 // All routes below require admin authentication
 router.use(authenticateAdmin);
 
@@ -383,38 +425,6 @@ router.put('/:email', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to update user'
-    });
-  }
-});
-
-/**
- * DELETE /api/users/:email
- * Delete user
- */
-router.delete('/:email', async (req, res) => {
-  try {
-    const users = await db.users.getAll();
-    const userIndex = users.findIndex(u => u.email === req.params.email);
-    
-    if (userIndex === -1) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
-    }
-    
-    users.splice(userIndex, 1);
-    await db.users.save(users);
-    
-    res.json({
-      success: true,
-      message: 'User deleted successfully'
-    });
-  } catch (error) {
-    console.error('Delete user error:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to delete user'
     });
   }
 });
