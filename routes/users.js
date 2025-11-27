@@ -200,16 +200,23 @@ router.post('/forgot-password', async (req, res) => {
  */
 router.get('/check/:email', async (req, res) => {
   try {
+    console.log('🔍 Checking user exists:', req.params.email);
     const users = await db.users.getAll();
+    console.log(`📊 Total users in database: ${users.length}`);
+    console.log('📧 Searching for email:', req.params.email);
+    
     const user = users.find(u => u.email === req.params.email);
     
     if (!user) {
+      console.log('❌ User not found');
+      console.log('📋 Available emails:', users.map(u => u.email));
       return res.status(404).json({
         success: false,
         error: 'User not found'
       });
     }
     
+    console.log('✅ User found:', user.email);
     res.json({
       success: true,
       exists: true,
