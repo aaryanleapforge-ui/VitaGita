@@ -4,7 +4,7 @@
  */
 
 const admin = require('firebase-admin');
-const serviceAccount = require('../vitagita-firebase-adminsdk.json');
+const serviceAccount = require('/etc/secrets/vitagita-firebase-adminsdk.json');
 
 // Initialize Firebase Admin
 admin.initializeApp({
