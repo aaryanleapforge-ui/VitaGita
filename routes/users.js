@@ -195,6 +195,41 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 /**
+ * GET /api/users/check/:email (Public - for mobile app)
+ * Check if user exists
+ */
+router.get('/check/:email', async (req, res) => {
+  try {
+    const users = await db.users.getAll();
+    const user = users.find(u => u.email === req.params.email);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      });
+    }
+    
+    res.json({
+      success: true,
+      exists: true,
+      user: {
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+        dob: user.dob
+      }
+    });
+  } catch (error) {
+    console.error('Check user error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check user'
+    });
+  }
+});
+
+/**
  * GET /api/bookmarks/:email (Public - for mobile app)
  * Get user's bookmarks
  */
