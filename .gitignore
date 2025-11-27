@@ -35,3 +35,6 @@ node_modules/
 .DS_Store
 npm-debug.log*
 >>>>>>> 3dc147f000191c049b88c9aeb319c7417d645ade
+
+# Firebase Admin SDK
+vitagita-firebase-adminsdk.json
